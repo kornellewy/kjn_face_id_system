@@ -133,3 +133,6 @@ story_of_usage.txt
 
 # dataset
 /datasets/*
+
+# models
+/models/*
