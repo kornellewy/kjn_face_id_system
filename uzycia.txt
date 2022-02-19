@@ -1,0 +1,31 @@
+Story hight security
+1. Clients log with id card
+1.1 They upload front of id card
+1.2 They upload back of id card
+1.3 They upload vidoe of them holding of id card.
+1.4 Classify and check type of id card.
+1.5 Read and check data from id card.
+1.6 Split Video to frames
+1.7 Find all faces in all frames
+1.8 Check every face to face and face to id.
+1.9 Find id card on video
+1.10 Check id card on every frame and it is same id card
+
+Story low security
+1. Clients log with id card
+1.1 They upload front of id card
+1.2 They upload back of id card
+1.3 They upload photo of them holding of id card.
+1.4 Classify and check type of id card.
+1.5 Read and check data from id card.
+1.6 Find all faces in all photo.
+1.7 Find id card on photo.
+1.8 Check every face to face and face to id.
+
+Tasks - Models
+1. Reading model
+2. Id card type classification
+3. Id card alighment model
+4. Id card detecion on image
+5. Face finding model - ok - right now
+6. Face compering model

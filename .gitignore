@@ -128,11 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# tasks
-story_of_usage.txt
-
 # dataset
 /datasets/*
 
 # models
 /models/*
+
+# tests
+/test_case_example*

@@ -1,0 +1,6 @@
+1. Staranie sie zachować standardy newvomo w kodzie.
+2. Bbox w formacie yolo.
+3. Zdjecia w formacie png.
+4. Labelki do detekcji obektow w formacie txt.
+5. Filmy w formacie mp4.
+6. 
