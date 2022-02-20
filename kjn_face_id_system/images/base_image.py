@@ -2,14 +2,15 @@ from pathlib import Path
 from typing import Optional
 
 import cv2
-from cv2 import cvtColor
 import numpy as np
 
 
 class BaseKFISImage:
-    def __init__(self, image_path: Path) -> None:
+    def __init__(self, image_path: Path, tags: Optional[dict]=None) -> None:
         super().__init__()
         self.image_path = image_path
+        self.image_name = image_path.name
+        self.tags = tags
         self.image = cv2.imread(image_path.as_posix())
         self.height, self.width = self.get_image_width_height()
 
@@ -35,6 +36,7 @@ class BaseKFISImage:
             self.uplarge_image(new_width=new_width, new_height=new_height)
         else:
             self.shrink_image(new_width=new_width, new_height=new_height)
+        self.height, self.width = self.get_image_width_height()
 
     def uplarge_image(self, new_width: int, new_height: int) -> None:
         self.image = cv2.resize(
