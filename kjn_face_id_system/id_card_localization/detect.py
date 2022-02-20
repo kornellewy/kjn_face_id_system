@@ -61,19 +61,20 @@ from utils.torch_utils import select_device, time_sync
 
 @torch.no_grad()
 def run(
+    model=None,  # loaded model
     weights=ROOT / "yolov5s.pt",  # model.pt path(s)
     source=ROOT / "data/images",  # file/dir/URL/glob, 0 for webcam
     data=ROOT / "data/coco128.yaml",  # dataset.yaml path
     imgsz=(640, 640),  # inference size (height, width)
     conf_thres=0.25,  # confidence threshold
     iou_thres=0.45,  # NMS IOU threshold
-    max_det=1000,  # maximum detections per image
+    max_det=1,  # maximum detections per image
     device="cpu",  # cuda device, i.e. 0 or 0,1,2,3 or cpu
     view_img=False,  # show results
     save_txt=False,  # save results to *.txt
-    save_conf=False,  # save confidences in --save-txt labels
+    save_conf=True,  # save confidences in --save-txt labels
     save_crop=False,  # save cropped prediction boxes
-    nosave=False,  # do not save images/videos
+    nosave=True,  # do not save images/videos
     classes=None,  # filter by class: --class 0, or --class 0 2 3
     agnostic_nms=False,  # class-agnostic NMS
     augment=False,  # augmented inference
@@ -104,7 +105,8 @@ def run(
 
     # Load model
     device = select_device(device)
-    model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
+    if not model:
+        model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
     stride, names, pt, jit, onnx, engine = (
         model.stride,
         model.names,
@@ -194,15 +196,15 @@ def run(
 
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
+                    xywh = (
+                        (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn)
+                        .view(-1)
+                        .tolist()
+                    )  # normalized xywh
+                    line = (
+                        (cls, *xywh, conf) if save_conf else (cls, *xywh)
+                    )  # label format
                     if save_txt:  # Write to file
-                        xywh = (
-                            (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn)
-                            .view(-1)
-                            .tolist()
-                        )  # normalized xywh
-                        line = (
-                            (cls, *xywh, conf) if save_conf else (cls, *xywh)
-                        )  # label format
                         with open(txt_path + ".txt", "a") as f:
                             f.write(("%g " * len(line)).rstrip() % line + "\n")
 
@@ -269,6 +271,7 @@ def run(
         LOGGER.info(f"Results saved to {colorstr('bold', save_dir)}{s}")
     if update:
         strip_optimizer(weights)  # update model (to fix SourceChangeWarning)
+    return line
 
 
 def parse_opt():

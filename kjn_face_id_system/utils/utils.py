@@ -13,6 +13,8 @@ IMAGE_TAG_VALUE_FOR_SELFIE = "selfie"
 IMAGE_TAG_VALUE_FOR_FRONT_ID = "front_id"
 IMAGE_TAG_VALUE_FOR_BACK_ID = "back_id"
 
+TEMP_DIR_NAME = "tmp"
+
 
 def load_images(path):
     images = []
@@ -23,6 +25,7 @@ def load_images(path):
             continue
         images.append(os.path.join(path, f))
     return images
+
 
 def get_date_and_time():
     now = datetime.now()

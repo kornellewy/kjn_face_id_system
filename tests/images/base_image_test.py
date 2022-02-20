@@ -39,6 +39,8 @@ class BaseKFISImageTests(unittest.TestCase):
         self.assertEqual(base_image.height, self.test_new_small_image_height)
         self.assertEqual(base_image.width, self.test_new_small_image_width)
 
+    # TODO: Test image save update
+
     def tearDown(self) -> None:
         return
 

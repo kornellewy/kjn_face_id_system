@@ -4,7 +4,7 @@ from typing import Optional, List
 import cv2
 import numpy as np
 
-from kjn_face_id_system.id_card_localization.detect import run as detect_id_card
+from kjn_face_id_system.id_card_localization import IdCardLocalizator
 from kjn_face_id_system.utils.utils import (
     ID_CARD_BACK_DIR_NAME,
     ID_CARD_FRONT_DIR_NAME,
@@ -60,6 +60,8 @@ class IdCaseKFISImage:
         self.face_images = []  # n images of face
         self.id_card_images = []  # place for idcard images
 
+        self.id_card_localizator = IdCardLocalizator()
+
     def check_case(self) -> None:
         if not self.id_card_front_path.exists():
             raise ValueError(
@@ -94,9 +96,10 @@ class IdCaseKFISImage:
         for image_path, image_tags in zip(
             self.start_images_paths, self.start_images_tags
         ):
-            pass
+            id_card_bbox = self.id_card_localizator.detect(image_path)
+            print(id_card_bbox)
 
-    def find_id_cards(self, id_card: np.ndarray) -> Optional[np.ndarray]:
+    def find_id_cards(self, image_path: Path) -> Optional[dict]:
         # znajduje dowody na zdjecnciu zapisuje jak wygladaja
         # i zapisuje txt z lokazlizacja i zwaca wycientego bbox idcard
         pass
@@ -105,4 +108,12 @@ class IdCaseKFISImage:
         # prostowanie zdjencia bboxa
         pass
 
-    def create_id_card(self, id_card: np.ndarray) -> :
+    def create_id_card(self, id_card: np.ndarray) -> None:
+        # twozymy objekt id card ktory czyhta karty i
+        # napisy i zapisuje odczytane wartosic
+        pass
+
+    def final_case(self) -> None:
+        # funkcja ktora sprawdza porpawnosć stowzeonego obiektu,
+        # jego strukute, odczytane wartosci
+        pass
