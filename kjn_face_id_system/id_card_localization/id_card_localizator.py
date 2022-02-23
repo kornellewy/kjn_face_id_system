@@ -2,7 +2,10 @@ from typing import Optional
 from pathlib import Path
 
 from kjn_face_id_system.id_card_localization.detect import run
+from kjn_face_id_system.images.bbox import BBox
 from .models.common import DetectMultiBackend
+from kjn_face_id_system.utils.utils import ID_CARD_CLASS_NAME
+
 
 
 class IdCardLocalizator:
@@ -22,19 +25,7 @@ class IdCardLocalizator:
             project=target_dir_path,
             device=self.device
         )
-        return self.preproces_line(line)
-
-    def preproces_line(self, line: list) -> dict:
-        line = [float(num) for num in line]
-        return{
-            "class_index": (line[0]),
-            "x_center": line[1],
-            "y_center": line[2],
-            "width": line[3],
-            "height": line[4],
-            "confidence": line[5],
-        }
-            
+        return BBox(image_path=image_path, line=line, bbox_class=ID_CARD_CLASS_NAME)
                 
 
         

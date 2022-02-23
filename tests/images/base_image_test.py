@@ -9,7 +9,6 @@ from tests.utils import TEST_TEMP_DIR_PATH
 
 class BaseKFISImageTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.test
         self.test_image_path = Path("test_case_example/selfie/id.png")
         self.test_image_height = 576
         self.test_image_width = 1024

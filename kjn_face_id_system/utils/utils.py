@@ -1,5 +1,7 @@
 import os
 from datetime import datetime
+from pathlib import Path
+import shutil
 
 ID_CARD_BACK_DIR_NAME = "back_id"
 ID_CARD_FRONT_DIR_NAME = "front_id"
@@ -14,6 +16,8 @@ IMAGE_TAG_VALUE_FOR_FRONT_ID = "front_id"
 IMAGE_TAG_VALUE_FOR_BACK_ID = "back_id"
 
 TEMP_DIR_NAME = "tmp"
+
+ID_CARD_CLASS_NAME = "id_card"
 
 
 def load_images(path):
@@ -30,3 +34,13 @@ def load_images(path):
 def get_date_and_time():
     now = datetime.now()
     return now.strftime("%H_%M_%S__%d_%m_%Y")
+
+
+def create_single_base_example() -> Path:
+    source_example = "test_case_example"
+    targer_ame = f"{source_example}_{get_date_and_time()}"
+    target_path = Path(TEMP_DIR_NAME)
+    target_path.mkdir(parents=True, exist_ok=True)
+    target_path = target_path.joinpath(targer_ame)
+    shutil.copytree(source_example, target_path, dirs_exist_ok=True, symlinks=True)
+    return target_path

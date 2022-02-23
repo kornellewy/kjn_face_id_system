@@ -2,9 +2,14 @@ from pathlib import Path
 from typing import Optional, List
 
 import cv2
+from matplotlib.transforms import Bbox
 import numpy as np
 
-from kjn_face_id_system.id_card_localization import IdCardLocalizator
+from kjn_face_id_system.images.bbox import BBox
+from kjn_face_id_system.id_card_localization.id_card_localizator import (
+    IdCardLocalizator,
+)
+from kjn_face_id_system.images.base_image import BaseKFISImage
 from kjn_face_id_system.utils.utils import (
     ID_CARD_BACK_DIR_NAME,
     ID_CARD_FRONT_DIR_NAME,
@@ -23,6 +28,7 @@ from kjn_face_id_system.utils.utils import (
 class IdCaseKFISImage:
     def __init__(self, case_path: Path, image_name: str) -> None:
         self.case_path = case_path
+        self.image_name = image_name
         self.id_card_front_dir_path = case_path.joinpath(ID_CARD_FRONT_DIR_NAME)
         self.id_card_front_path = self.id_card_front_dir_path.joinpath(self.image_name)
         self.id_card_back_dir_path = case_path.joinpath(ID_CARD_BACK_DIR_NAME)
@@ -35,7 +41,7 @@ class IdCaseKFISImage:
         self.start_images_paths = [
             self.id_card_front_path,
             self.id_card_back_path,
-            self.selfie_dir_path,
+            self.id_selfie_path,
         ]
         self.start_images_tags = [
             {
@@ -96,13 +102,17 @@ class IdCaseKFISImage:
         for image_path, image_tags in zip(
             self.start_images_paths, self.start_images_tags
         ):
-            id_card_bbox = self.id_card_localizator.detect(image_path)
-            print(id_card_bbox)
+            id_card_bbox = self.find_id_cards(image_path, image_tags)
 
-    def find_id_cards(self, image_path: Path) -> Optional[dict]:
-        # znajduje dowody na zdjecnciu zapisuje jak wygladaja
-        # i zapisuje txt z lokazlizacja i zwaca wycientego bbox idcard
-        pass
+    def find_id_cards(self, image_path: Path, image_tags: dict) -> BBox:
+        id_card_bbox = self.id_card_localizator.detect(image_path)
+        id_card_bbox.tags = image_tags
+        self.bboxes.append(id_card_bbox)
+        return id_card_bbox
+
+    def cut_if_id_card(self, id_card_bbox: BBox) -> np.ndarray:
+        full_image = BaseKFISImage(id_card_bbox.image_path)
+        full_height, full_width = full_image.height, full_image.width
 
     def straightening_of_id_card(self, id_card: np.ndarray) -> Optional[np.ndarray]:
         # prostowanie zdjencia bboxa
