@@ -102,7 +102,12 @@ class IdCaseKFISImage:
         for image_path, image_tags in zip(
             self.start_images_paths, self.start_images_tags
         ):
-            id_card_bbox = self.find_id_cards(image_path, image_tags)
+            id_card_bbox = self.find_id_cards(
+                image_path=image_path, image_tags=image_tags
+            )
+            crop_img = self.cut_if_id_card(bbox=id_card_bbox)
+            cv2.imshow("crop_img", crop_img)
+            cv2.waitKey(0)
 
     def find_id_cards(self, image_path: Path, image_tags: dict) -> BBox:
         id_card_bbox = self.id_card_localizator.detect(image_path)
@@ -110,9 +115,19 @@ class IdCaseKFISImage:
         self.bboxes.append(id_card_bbox)
         return id_card_bbox
 
-    def cut_if_id_card(self, id_card_bbox: BBox) -> np.ndarray:
-        full_image = BaseKFISImage(id_card_bbox.image_path)
+    def cut_if_id_card(self, bbox: BBox) -> np.ndarray:
+        full_image = BaseKFISImage(bbox.image_path)
         full_height, full_width = full_image.height, full_image.width
+        bbox_as_coco = bbox.get_coco()
+        bbox_height = int(bbox_as_coco["height"] * full_height)
+        bbox_width = int(bbox_as_coco["width"] * full_width)
+        bbox_x_top_left = int(bbox_as_coco["x_top_left"] * full_width)
+        bbox_y_top_left = int(bbox_as_coco["y_top_left"] * full_height)
+        crop_img = full_image.image[
+            bbox_y_top_left : bbox_y_top_left + bbox_height,
+            bbox_x_top_left : bbox_x_top_left + bbox_width,
+        ]
+        return crop_img
 
     def straightening_of_id_card(self, id_card: np.ndarray) -> Optional[np.ndarray]:
         # prostowanie zdjencia bboxa
