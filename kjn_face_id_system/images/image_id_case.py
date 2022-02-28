@@ -129,8 +129,13 @@ class IdCaseKFISImage:
         ]
         return crop_img
 
-    def straightening_of_id_card(self, id_card: np.ndarray) -> Optional[np.ndarray]:
+    def straightening_of_id_card(self) -> None:
         # prostowanie zdjencia bboxa
+        # nie wiem czy bd potrzebne
+        pass
+
+    def classification_id_card_type(self) -> None:
+        # klasyfikacja one shot do typu dowodu ktury mamy w bazie danych
         pass
 
     def create_id_card(self, id_card: np.ndarray) -> None:

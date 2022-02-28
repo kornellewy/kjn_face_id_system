@@ -59,7 +59,7 @@ class DuplicatImageRemover(object):
             # print( '{} is near duplicate of {}'.format(img_path1, img_path2) )
 
 if __name__ == '__main__':
-    data_set_path = 'datasets/dataset_of_people_holding_id_raw'
+    data_set_path = 'J:/web_scraper/images'
     kjn = DuplicatImageRemover()
     kjn.remove_duplicats(data_set_path)
     

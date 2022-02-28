@@ -23,8 +23,8 @@ class IdCaseKFISImageTests(unittest.TestCase):
         detector = IdCaseKFISImage(
             case_path=self.test_case_path, image_name=self.test_image_name
         )
-        detector.get_idcards()
-        print(detector.bboxes)
+        bboxes = detector.get_idcards()
+        self.assertAlmostEqual(len(bboxes), 3)
 
     # TODO: Test image save update
 

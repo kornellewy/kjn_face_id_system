@@ -11,3 +11,5 @@ class KFISIdCase(BaseKFISImage):
         super().__init__(image_path=image_path)
         self.case_path = case_path
         self.tags = tags
+        self.id_card_type = None
+        

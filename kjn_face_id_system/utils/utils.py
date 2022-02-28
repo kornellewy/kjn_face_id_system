@@ -18,6 +18,7 @@ IMAGE_TAG_VALUE_FOR_BACK_ID = "back_id"
 TEMP_DIR_NAME = "tmp"
 
 ID_CARD_CLASS_NAME = "id_card"
+FACE_CLASS_NAME = "face"
 
 
 def load_images(path):

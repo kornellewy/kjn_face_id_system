@@ -1,26 +1,44 @@
 import unittest
-from pathlib import Path
+import shutil
 
-import numpy as np
-
+from kjn_face_id_system.images.bbox import BBox
+from kjn_face_id_system.utils.utils import (
+    create_single_base_example,
+    IMAGE_TAG_VALUE_FOR_SELFIE,
+    ID_CARD_CLASS_NAME,
+)
 from kjn_face_id_system.id_card_localization.id_card_localizator import (
     IdCardLocalizator,
 )
+from kjn_face_id_system.utils.utils import ID_CARD_CLASS_NAME
 
 
-class IdCardLocalizatorTests(unittest.TestCase):
+class LocalizatorTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.test_image_path = Path("test_case_example/selfie/id.png")
-
-    def test_creat_localizator(self):
-        localizator = IdCardLocalizator()
-        bbox = localizator.detect(image_path=self.test_image_path)
-        print(bbox)
+        self.test_case_path = create_single_base_example()
+        self.test_image_name = "id.png"
+        self.test_image_path = self.test_case_path.joinpath(
+            IMAGE_TAG_VALUE_FOR_SELFIE, self.test_image_name
+        )
 
     def test_detect(self):
-        localizator = IdCardLocalizator()
-        bbox = localizator.detect(image_path=self.test_image_path)
-        self.assertEqual(len(bbox), 6)
+        detector = IdCardLocalizator()
+        bbox = detector.detect(self.test_image_path)
+        self.assertTrue(isinstance(bbox, BBox))
+        self.assertTrue(bbox.bbox_class == ID_CARD_CLASS_NAME)
+        self.assertTrue(bbox.x_center > 0)
+        self.assertTrue(bbox.x_center < 1)
+        self.assertTrue(bbox.y_center > 0)
+        self.assertTrue(bbox.y_center < 1)
+        self.assertTrue(bbox.width > 0)
+        self.assertTrue(bbox.width < 1)
+        self.assertTrue(bbox.height > 0)
+        self.assertTrue(bbox.height < 1)
+        self.assertTrue(bbox.confidence > 0)
+        self.assertTrue(bbox.confidence < 1)
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.test_case_path)
 
 
 if __name__ == "__main__":
