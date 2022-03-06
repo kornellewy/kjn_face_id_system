@@ -4,10 +4,14 @@ from typing import Optional, List
 import cv2
 from matplotlib.transforms import Bbox
 import numpy as np
+import torch
 
 from kjn_face_id_system.images.bbox import BBox
 from kjn_face_id_system.id_card_localization.id_card_localizator import (
     IdCardLocalizator,
+)
+from kjn_face_id_system.face_localization.face_localizator import (
+    FaceLocalizator,
 )
 from kjn_face_id_system.images.base_image import BaseKFISImage
 from kjn_face_id_system.utils.utils import (
@@ -26,9 +30,15 @@ from kjn_face_id_system.utils.utils import (
 
 
 class IdCaseKFISImage:
-    def __init__(self, case_path: Path, image_name: str) -> None:
+    def __init__(
+        self,
+        case_path: Path,
+        image_name: str,
+        device: Optional[torch.device] = torch.device("cpu"),
+    ) -> None:
         self.case_path = case_path
         self.image_name = image_name
+        self.device = device
         self.id_card_front_dir_path = case_path.joinpath(ID_CARD_FRONT_DIR_NAME)
         self.id_card_front_path = self.id_card_front_dir_path.joinpath(self.image_name)
         self.id_card_back_dir_path = case_path.joinpath(ID_CARD_BACK_DIR_NAME)
@@ -66,7 +76,8 @@ class IdCaseKFISImage:
         self.face_images = []  # n images of face
         self.id_card_images = []  # place for idcard images
 
-        self.id_card_localizator = IdCardLocalizator()
+        self.id_card_localizator = IdCardLocalizator(device=device)
+        self.face_localizator = FaceLocalizator(device=device)
 
     def check_case(self) -> None:
         if not self.id_card_front_path.exists():
@@ -81,15 +92,38 @@ class IdCaseKFISImage:
     def get_faces(self) -> None:
         # znajduje zdjecia twazy, towzy obiekty face image z tagami
         # w zaleznosci gdzie zdjecie sie znajduje
-        pass
+        for image_path, image_tags in zip(
+            self.start_images_paths, self.start_images_tags
+        ):
+            faces_bboxes = self.find_faces(image_path=image_path, image_tags=image_tags)
+            faces_images = self.cut_faces(faces_bboxes=faces_bboxes)
 
-    def find_faces(self) -> Optional[List[np.ndarray]]:
+    def find_faces(self, image_path: Path, image_tags: dict) -> BBox:
         # znajduje zdjecia twazy na zdjeciu
-        pass
+        faces_bboxes = self.face_localizator.detect(image_path=image_path)
+        for face_bbox in faces_bboxes:
+            face_bbox.tags = image_tags
+        self.bboxes += faces_bboxes
+        return faces_bboxes
 
-    def get_paths_for_face_images(self) -> List[Path]:
-        # daje sieszki do zapisj zdjec twazy
-        pass
+    def cut_faces(self, faces_bboxes: List[Bbox]) -> List[np.ndarray]:
+        faces_images = []
+        for face_bbox in faces_bboxes:
+            full_image = BaseKFISImage(face_bbox.image_path)
+            full_height, full_width = full_image.height, full_image.width
+            bbox_as_coco = face_bbox.get_coco()
+            bbox_height = int(bbox_as_coco["height"] * full_height)
+            bbox_width = int(bbox_as_coco["width"] * full_width)
+            bbox_x_top_left = int(bbox_as_coco["x_top_left"] * full_width)
+            bbox_y_top_left = int(bbox_as_coco["y_top_left"] * full_height)
+            crop_img = full_image.image[
+                bbox_y_top_left : bbox_y_top_left + bbox_height,
+                bbox_x_top_left : bbox_x_top_left + bbox_width,
+            ]
+            faces_images.append(crop_img)
+            cv2.imshow("crop_img", crop_img)
+            cv2.waitKey(0)
+        return faces_images
 
     def save_faces(
         self, face_images: List[np.ndarray], save_images_paths: List[Path]
@@ -98,18 +132,16 @@ class IdCaseKFISImage:
         pass
 
     def get_idcards(self):
-        # iterujesz po wszytkich bazowych zdjeciach szukajac zdjecia dowdu
         for image_path, image_tags in zip(
             self.start_images_paths, self.start_images_tags
         ):
-            id_card_bbox = self.find_id_cards(
+            id_card_bbox = self.find_id_card(
                 image_path=image_path, image_tags=image_tags
             )
             crop_img = self.cut_if_id_card(bbox=id_card_bbox)
-            cv2.imshow("crop_img", crop_img)
-            cv2.waitKey(0)
+            # TODO: stwozenie i zapis obiekttu id_case
 
-    def find_id_cards(self, image_path: Path, image_tags: dict) -> BBox:
+    def find_id_card(self, image_path: Path, image_tags: dict) -> BBox:
         id_card_bbox = self.id_card_localizator.detect(image_path)
         id_card_bbox.tags = image_tags
         self.bboxes.append(id_card_bbox)

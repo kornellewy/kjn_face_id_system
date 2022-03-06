@@ -6,14 +6,19 @@ from kjn_face_id_system.images.bbox import BBox
 from .models.common import DetectMultiBackend
 from kjn_face_id_system.utils.utils import ID_CARD_CLASS_NAME
 
+import torch
+
 
 class IdCardLocalizator:
-    def __init__(self, device: Optional[str] = "cpu") -> None:
+    def __init__(
+        self,
+        device: Optional[torch.device] = torch.device("cpu"),
+    ) -> None:
         self.weights = "models/yolo5_localizator/weights/best.pt"
         self.data = "datasets/dataset_of_people_holding_id/data.yaml"
         self.device = device
         self.model = DetectMultiBackend(
-            self.weights, device=device, dnn=False, data=self.data
+            self.weights, device=self.device, dnn=False, data=self.data
         )
 
     def detect(self, image_path: Path) -> None:
