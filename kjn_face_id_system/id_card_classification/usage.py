@@ -12,7 +12,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, models, transforms
 import pytorch_lightning as pl
 
-from dataset_multiplefaces import DatasetMultipleFaces
+from kjn_face_id_system.id_card_classification.dataset import DatasetMultipleFaces
 from train_pytorch_lightning import SiameseModule
 
 

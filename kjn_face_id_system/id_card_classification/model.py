@@ -23,8 +23,8 @@ class Siamese(nn.Module):
             nn.Conv2d(128, 256, 4),
             nn.ReLU(),  # 256@6*6
         )
-        self.liner = nn.Sequential(nn.Linear(6400, 4096), nn.Sigmoid())
-        self.out = nn.Linear(4096, 1)
+        self.liner = nn.Sequential(nn.Linear(102400, 512), nn.Sigmoid())
+        self.out = nn.Linear(512, 1)
 
     def forward_one(self, x):
         x = self.conv(x)
@@ -42,7 +42,7 @@ class Siamese(nn.Module):
 
 
 if __name__ == "__main__":
-    input_tensor = torch.rand([1, 3, 300, 300])
+    input_tensor = torch.rand([1, 3, 224, 224])
     model = Siamese()
-    output_tensor1, output_tensor2 = model.forward(input_tensor, input_tensor)
-    print(output_tensor1.shape, output_tensor2.shape)
+    output_tensor = model.forward(input_tensor, input_tensor)
+    print(output_tensor)

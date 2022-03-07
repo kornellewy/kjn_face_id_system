@@ -1,23 +1,16 @@
 import os
 import cv2
-from PIL import Image
-import numpy as np
 from random import randint, choice, sample
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 import torch
-from torch import nn
-from torch import optim
-from torchvision import datasets, transforms
-from torchvision.utils import save_image
-import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 
-from utils import load_files_with_given_extension, random_idx_with_exclude
+from .utils import load_files_with_given_extension
 
 
-class DatasetMultipleFaces(Dataset):
+class IdCardDataset(Dataset):
     def __init__(self, dataset_path, img_transform=None):
         self.dataset_path = dataset_path
         self.all_images_paths = load_files_with_given_extension(dataset_path)
@@ -79,13 +72,9 @@ if __name__ == "__main__":
             ToTensorV2(),
         ]
     )
-    dataset_path = "dataset/"
-    dataset = DatasetMultipleFaces(
-        dataset_path=dataset_path, img_transform=img_transform
-    )
+    dataset_path = "datasets/id_card_by_cuntry/"
+    dataset = Dataset(dataset_path=dataset_path, img_transform=img_transform)
     image1, image2, class_idx = dataset[0]
     print("image1.shape: ", image1.shape)
-    save_image(image1, "image1.jpg")
     print("image2.shape: ", image2.shape)
-    save_image(image2, "image2.jpg")
     print("class_idx: ", class_idx)

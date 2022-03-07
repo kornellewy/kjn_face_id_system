@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 from sklearn.metrics import accuracy_score
 
-from dataset_multiplefaces import DatasetMultipleFaces
+from kjn_face_id_system.id_card_classification.dataset import DatasetMultipleFaces
 from model import Siamese
 
 
@@ -20,7 +20,7 @@ class SiameseModule(pl.LightningModule):
     def __init__(
         self,
         hparams={
-            "batch_size": 256,
+            "batch_size": 64,
             "lr": 0.00006,
             "train_dataset_path": "J:/yt_image_dataset_maker/face_dataset_train",
             "valid_dataset_path": "J:/yt_image_dataset_maker/face_dataset_valid",
@@ -33,7 +33,7 @@ class SiameseModule(pl.LightningModule):
         self.criterion = torch.nn.BCEWithLogitsLoss(size_average=True)
         self.img_transform = A.Compose(
             [
-                A.Resize(100, 100),
+                A.Resize(224, 224),
                 A.HorizontalFlip(p=0.5),
                 A.VerticalFlip(p=0.5),
                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
@@ -109,7 +109,7 @@ class SiameseModule(pl.LightningModule):
 if __name__ == "__main__":
     kjn = SiameseModule()
     checkpoint_save_path = str(Path(__file__).parent)
-    checkpoint_path = "face_one_shot_learing/lightning_logs/version_22/checkpoints/epoch=162-step=159279.ckpt"
+    checkpoint_path = "face_one_shot_learing/lightning_logs/version_24/checkpoints/epoch=20-step=111321.ckpt"
     trainer = pl.Trainer(
         gpus=1,
         precision=16,
@@ -121,5 +121,5 @@ if __name__ == "__main__":
     )
     trainer.fit(kjn)
     trainer.test(kjn)
-    model_save_path = "face_one_shot_learing/final.pth"
-    kjn.conver_model_to_pth(model_save_path)
+    # model_save_path = "face_one_shot_learing/final.pth"
+    # kjn.conver_model_to_pth(model_save_path)

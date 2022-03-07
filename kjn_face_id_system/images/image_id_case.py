@@ -26,6 +26,7 @@ from kjn_face_id_system.utils.utils import (
     IMAGE_TAG_VALUE_FOR_FRONT_ID,
     IMAGE_TAG_VALUE_FOR_BACK_ID,
     get_date_and_time,
+    IMAGE_NAME,
 )
 
 
@@ -89,17 +90,19 @@ class IdCaseKFISImage:
         elif not self.id_selfie_path.exists():
             raise ValueError(f"id_selfie_path: {self.id_selfie_path} dont exist.")
 
-    def get_faces(self) -> None:
-        # znajduje zdjecia twazy, towzy obiekty face image z tagami
-        # w zaleznosci gdzie zdjecie sie znajduje
+    def get_faces(self) -> list:
         for image_path, image_tags in zip(
             self.start_images_paths, self.start_images_tags
         ):
             faces_bboxes = self.find_faces(image_path=image_path, image_tags=image_tags)
             faces_images = self.cut_faces(faces_bboxes=faces_bboxes)
+            face_objects = self.create_faces_images_obejcts(
+                faces_images=faces_images, image_tags=image_tags
+            )
+            self.face_images += face_objects
+        return self.face_images
 
     def find_faces(self, image_path: Path, image_tags: dict) -> BBox:
-        # znajduje zdjecia twazy na zdjeciu
         faces_bboxes = self.face_localizator.detect(image_path=image_path)
         for face_bbox in faces_bboxes:
             face_bbox.tags = image_tags
@@ -121,15 +124,21 @@ class IdCaseKFISImage:
                 bbox_x_top_left : bbox_x_top_left + bbox_width,
             ]
             faces_images.append(crop_img)
-            cv2.imshow("crop_img", crop_img)
-            cv2.waitKey(0)
         return faces_images
 
-    def save_faces(
-        self, face_images: List[np.ndarray], save_images_paths: List[Path]
-    ) -> None:
-        # zapisz twaze znalezione na 1 zdjeciu
-        pass
+    def create_faces_images_obejcts(
+        self, faces_images: List[np.ndarray], image_tags: dict
+    ):
+        self.faces_dir_path.mkdir(exist_ok=True, parents=True)
+        face_objects = []
+        for face_idx, face_image in enumerate(faces_images):
+            face_image_path = self.faces_dir_path.joinpath(
+                f"{image_tags[IMAGE_TAG_KEY_FOR_SOURCE]}_{face_idx}_{IMAGE_NAME}"
+            )
+            cv2.imwrite(face_image_path.as_posix(), face_image)
+            face_image = BaseKFISImage(image_path=face_image_path, tags=image_tags)
+            face_objects.append(face_image)
+        return face_objects
 
     def get_idcards(self):
         for image_path, image_tags in zip(
@@ -138,8 +147,12 @@ class IdCaseKFISImage:
             id_card_bbox = self.find_id_card(
                 image_path=image_path, image_tags=image_tags
             )
-            crop_img = self.cut_if_id_card(bbox=id_card_bbox)
-            # TODO: stwozenie i zapis obiekttu id_case
+            id_card_image = self.cut_if_id_card(bbox=id_card_bbox)
+            id_card_object = self.create_id_card_obejct(
+                id_card_image=id_card_image, image_tags=image_tags
+            )
+            self.id_card_images.append(id_card_object)
+        return self.id_card_images
 
     def find_id_card(self, image_path: Path, image_tags: dict) -> BBox:
         id_card_bbox = self.id_card_localizator.detect(image_path)
@@ -161,6 +174,15 @@ class IdCaseKFISImage:
         ]
         return crop_img
 
+    def create_id_card_obejct(self, id_card_image: List[np.ndarray], image_tags: dict):
+        self.cut_id_cards_path.mkdir(exist_ok=True, parents=True)
+        idx_card_image_path = self.cut_id_cards_path.joinpath(
+            f"{image_tags[IMAGE_TAG_KEY_FOR_SOURCE]}_{IMAGE_NAME}"
+        )
+        cv2.imwrite(idx_card_image_path.as_posix(), id_card_image)
+        id_card_image = BaseKFISImage(image_path=idx_card_image_path, tags=image_tags)
+        return id_card_image
+
     def straightening_of_id_card(self) -> None:
         # prostowanie zdjencia bboxa
         # nie wiem czy bd potrzebne
@@ -168,11 +190,6 @@ class IdCaseKFISImage:
 
     def classification_id_card_type(self) -> None:
         # klasyfikacja one shot do typu dowodu ktury mamy w bazie danych
-        pass
-
-    def create_id_card(self, id_card: np.ndarray) -> None:
-        # twozymy objekt id card ktory czyhta karty i
-        # napisy i zapisuje odczytane wartosic
         pass
 
     def final_case(self) -> None:

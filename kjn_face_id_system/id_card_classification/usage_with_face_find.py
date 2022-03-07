@@ -17,7 +17,7 @@ import pytorch_lightning as pl
 from sklearn.metrics import accuracy_score
 from facenet_pytorch import MTCNN
 
-from dataset_multiplefaces import DatasetMultipleFaces
+from kjn_face_id_system.id_card_classification.dataset import DatasetMultipleFaces
 from train_pytorch_lightning import SiameseModule
 from utils import load_files_with_given_extension
 from model import Siamese

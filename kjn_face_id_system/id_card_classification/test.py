@@ -21,10 +21,10 @@ from torch.utils.data import Dataset, DataLoader
 import torch.nn.functional as F
 from torchvision.utils import make_grid
 
-from dataset_multiplefaces import DatasetMultipleFaces
+from kjn_face_id_system.id_card_classification.dataset import DatasetMultipleFaces
 from model import Siamese
 from loss import ContrastiveLoss
-from dataset_multiplefaces import DatasetMultipleFaces
+from kjn_face_id_system.id_card_classification.dataset import DatasetMultipleFaces
 from train_pytorch_lightning import SiameseModule
 
 
