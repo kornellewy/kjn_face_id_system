@@ -4,7 +4,7 @@ import numpy as np
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-from kjn_face_id_system.id_card_classification.dataset import IdCardDataset
+from kjn_face_id_system.id_card_classification_one_shot.dataset import IdCardDataset
 
 
 class IdCaseKFISImageTests(unittest.TestCase):

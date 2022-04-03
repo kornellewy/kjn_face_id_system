@@ -7,7 +7,7 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import torch
 
-from kjn_face_id_system.id_card_classification.id_card_classificator import (
+from kjn_face_id_system.id_card_classification_one_shot.id_card_classificator import (
     IdCardClassificator,
 )
 
@@ -30,7 +30,7 @@ class IdCardClassificatorTests(unittest.TestCase):
         print(max_db_image_name)
         print(id_card_name)
         print(max_similarity)
-        # print(images_similarities)
+        # dont need more test it dont work good
 
 
 if __name__ == "__main__":

@@ -11,8 +11,8 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 from sklearn.metrics import accuracy_score
 
-from kjn_face_id_system.id_card_classification.dataset import IdCardDataset
-from kjn_face_id_system.id_card_classification.model import Siamese
+from kjn_face_id_system.id_card_classification_one_shot.dataset import IdCardDataset
+from kjn_face_id_system.id_card_classification_one_shot.model import Siamese
 from kjn_face_id_system.optims.Adam import AdamW_GCC2
 
 

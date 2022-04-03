@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from kjn_face_id_system.id_card_classification.model import Siamese
+from kjn_face_id_system.id_card_classification_one_shot.model import Siamese
 
 
 class IdCaseKFISImageTests(unittest.TestCase):

@@ -7,11 +7,13 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import cv2
 
-from kjn_face_id_system.id_card_classification.train import Train
-from kjn_face_id_system.id_card_classification.utils import (
+from kjn_face_id_system.id_card_classification_one_shot.train import Train
+from kjn_face_id_system.id_card_classification_one_shot.utils import (
     load_files_with_given_extension,
 )
-from kjn_face_id_system.id_card_classification.constans import TYPE_TO_IMAGE_NAME_MAP
+from kjn_face_id_system.id_card_classification_one_shot.constans import (
+    TYPE_TO_IMAGE_NAME_MAP,
+)
 
 
 class IdCardClassificator:
