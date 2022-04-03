@@ -138,3 +138,5 @@ dmypy.json
 /test_case_example*
 /tmp*
 *lightning_logs*
+metadata_json*
+n_best_model*
