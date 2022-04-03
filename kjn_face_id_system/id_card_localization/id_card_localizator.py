@@ -21,7 +21,7 @@ class IdCardLocalizator:
             self.weights, device=self.device, dnn=False, data=self.data
         )
 
-    def detect(self, image_path: Path) -> None:
+    def detect(self, image_path: Path) -> BBox:
         target_dir_path = image_path.parent
         line = run(
             model=self.model,

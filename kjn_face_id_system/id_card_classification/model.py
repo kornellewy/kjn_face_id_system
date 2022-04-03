@@ -40,6 +40,10 @@ class Siamese(nn.Module):
         #  return self.sigmoid(out)
         return out
 
+    def forward_head(self, x1, x2):
+        dis = torch.abs(x1 - x2)
+        out = self.out(dis)
+        return out
 
 if __name__ == "__main__":
     input_tensor = torch.rand([1, 3, 224, 224])

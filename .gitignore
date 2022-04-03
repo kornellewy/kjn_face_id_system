@@ -137,3 +137,4 @@ dmypy.json
 # tests
 /test_case_example*
 /tmp*
+*lightning_logs*

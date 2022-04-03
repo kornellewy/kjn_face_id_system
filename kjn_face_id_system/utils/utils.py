@@ -23,8 +23,6 @@ ID_CARD_CLASS_NAME = "id_card"
 FACE_CLASS_NAME = "face"
 
 
-
-
 def load_images(path: str, valid_images: list = [".png"]) -> list:
     images = []
     for f in os.listdir(path):
